@@ -145,7 +145,7 @@ public class FishGame {
 			if (rand.nextDouble() < 0.3) 
 			{
 				// TODO(lab): What goes here?
-				
+				lost.moveRandomly();
 			}
 		}
 	}
