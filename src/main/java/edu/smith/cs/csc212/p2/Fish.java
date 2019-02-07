@@ -18,8 +18,11 @@ public class Fish extends WorldObject {
 	public static Color[] COLORS = {
 			Color.red,
 			Color.green,
-			Color.yellow
-			// TODO: (lab) Add more colors.
+			Color.yellow,
+			Color.orange,
+			Color.blue,
+			Color.magenta,
+			Color.pink
 			// TODO: (P2) Maybe make a special fish that is more points?
 	};
 	/**
@@ -34,7 +37,8 @@ public class Fish extends WorldObject {
 	/**
 	 * Called only on the Fish that is the player!
 	 */
-	public void markAsPlayer() {
+	public void markAsPlayer() 
+	{
 		this.player = true;
 	}
 
@@ -44,7 +48,8 @@ public class Fish extends WorldObject {
 	 * @param color Color by number.
 	 * @param world The world itself.
 	 */
-	public Fish(int color, World world) {
+	public Fish(int color, World world) 
+	{
 		super(world);
 		this.color = color;
 	}
@@ -53,7 +58,8 @@ public class Fish extends WorldObject {
 	 * What actual color is this fish? We store an index, so get it here.
 	 * @return the Color object from our array.
 	 */
-	public Color getColor() {
+	public Color getColor() 
+	{
 		return COLORS[this.color];
 	}
 	

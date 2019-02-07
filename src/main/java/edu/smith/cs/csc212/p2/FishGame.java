@@ -57,9 +57,10 @@ public class FishGame {
 		// Add a home!
 		home = world.insertFishHome();
 		
-		// TODO(lab) Generate some more rocks!
-		// TODO(lab) Make 5 into a constant, so it's easier to find & change.
-		for (int i=0; i<5; i++) {
+		final int ROCK_NUM = 15;
+
+		for (int i=0; i<ROCK_NUM; i++) 
+		{
 			world.insertRockRandomly();
 		}
 		
