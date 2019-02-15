@@ -151,6 +151,17 @@ public class World {
 	}
 	
 	/**
+	 * Insert a new Rock into the world at random.
+	 * @return the Rock.
+	 */
+	public FallingRock insertFallingRockRandomly() {
+		Rock r = new Rock(this);
+		FallingRock fr = new FallingRock(this, r);
+		insertRandomly(fr);
+		return fr;
+	}
+	
+	/**
 	 * Insert a new Fish into the world at random of a specific color.
 	 * @param color - the color of the fish.
 	 * @return the new fish itself.
@@ -197,12 +208,22 @@ public class World {
 		List<WorldObject> inSpot = this.find(x, y);
 		
 		for (WorldObject it : inSpot) {
-			// TODO(P2): Don't let us move over rocks as a Fish.
 			// The other fish shouldn't step "on" the player, the player should step on the other fish.
 			if (it instanceof Snail) {
 				// This if-statement doesn't let anyone step on the Snail.
 				// The Snail(s) are not gonna take it.
 				return false;
+			}
+			if (it instanceof Rock) {
+				// This if-statement doesn't let anyone step on the rock.
+				// The Rock(s) are not gonna take it.
+				return false;
+			}
+			if (it instanceof Fish) {
+				// This if-statement doesn't let other fish step on the fish.
+				// The Fish(es) are not gonna take it.
+				if(!isPlayer)
+					return false;
 			}
 		}
 		
@@ -226,11 +247,23 @@ public class World {
 	 * @param followers a set of objects to follow the leader.
 	 */
 	public static void objectsFollow(WorldObject target, List<? extends WorldObject> followers) {
-		// TODO(P2) Comment this method!
 		// What is recentPositions?
+		
+		// recentPositions is a Deque list storing the position history of the fishes
+		
 		// What is followers?
+		
+		// followers is a list of WorldObjects (fishes) that follow the leader
+		
 		// What is target?
+		
+		// target is the leader WorldObject (leader fish)
+		
 		// Why is past = putWhere[i+1]? Why not putWhere[i]?
+		
+		// we want to move each fish forward one so we increment i
+		
+		
 		List<IntPoint> putWhere = new ArrayList<>(target.recentPositions);
 		for (int i=0; i<followers.size(); i++) {
 			IntPoint past = putWhere.get(i+1);

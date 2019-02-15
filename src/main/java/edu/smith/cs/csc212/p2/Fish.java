@@ -13,17 +13,16 @@ import java.awt.geom.Ellipse2D;
  */
 public class Fish extends WorldObject {
 	/**
-	 * A fish is only special because of its color now!
+	 * A fish is special because of its color, and its points based on its color.
 	 */
 	public static Color[] COLORS = {
 			Color.red,
-			Color.green,
-			Color.yellow,
 			Color.orange,
+			Color.yellow,
+			Color.green,
 			Color.blue,
 			Color.magenta,
 			Color.pink
-			// TODO: (P2) Maybe make a special fish that is more points?
 	};
 	/**
 	 * This is an index into the {@link #COLORS} array.
@@ -37,6 +36,9 @@ public class Fish extends WorldObject {
 	// Whether or not this fish is fastScared
 	boolean fastScared;
 	
+	// The points each fish is worth based on color
+	int points;
+	
 	/**
 	 * Called only on the Fish that is the player!
 	 */
@@ -48,6 +50,8 @@ public class Fish extends WorldObject {
 
 	/**
 	 * A Fish knows what World it belongs to, because all WorldObjects do.
+	 * randomly decides whether the fish is fastScared
+	 * assigns each fish a point value that equals double the color value
 	 * @param color Color by number.
 	 * @param world The world itself.
 	 */
@@ -56,6 +60,7 @@ public class Fish extends WorldObject {
 		super(world);
 		this.color = color;
 		fastScared = rand.nextBoolean();
+		this.points = color*2;
 	}
 	
 	/**

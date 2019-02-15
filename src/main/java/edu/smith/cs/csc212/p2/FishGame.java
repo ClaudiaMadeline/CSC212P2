@@ -11,6 +11,10 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  */
 public class FishGame {
+	/*
+	 * Random in case you want random numbers!
+	 */
+	Random rand = ThreadLocalRandom.current();
 	/**
 	 * This is the world in which the fish are missing. (It's mostly a List!).
 	 */
@@ -34,9 +38,18 @@ public class FishGame {
 	List<Fish> found;
 	
 	/**
+	 * These are fish that came home!
+	 */
+	List<Fish> fish_home;
+	
+	/**
 	 * Number of steps!
 	 */
 	int stepsTaken;
+	/**
+	 * Number of steps it takes for fish to wander from line.
+	 */
+	int wanderSteps;
 	
 	/**
 	 * Score!
@@ -53,17 +66,28 @@ public class FishGame {
 		
 		missing = new ArrayList<Fish>();
 		found = new ArrayList<Fish>();
+		fish_home = new ArrayList<Fish>();
 		
 		// Add a home!
 		home = world.insertFishHome();
 		
-		final int NUM_ROCKS = 15;
+		// Add regular rocks!
+		final int NUM_ROCKS = 10;
 
 		for (int i=0; i<NUM_ROCKS; i++) 
 		{
 			world.insertRockRandomly();
 		}
 		
+		// Add falling rocks!
+		final int NUM_FALLING_ROCKS = 5;
+
+		for (int i=0; i<NUM_FALLING_ROCKS; i++) 
+		{
+			world.insertFallingRockRandomly();
+		}
+		
+		// Add a snail!
 		world.insertSnailRandomly();
 		
 		// Make the player out of the 0th fish color.
@@ -94,8 +118,7 @@ public class FishGame {
 	 * @return true if the player has won (or maybe lost?).
 	 */
 	public boolean gameOver() {
-		// TODO(P2) We want to bring the fish home before we win!
-		return missing.isEmpty();
+		return fish_home.size()==7;
 	}
 
 	/**
@@ -104,7 +127,7 @@ public class FishGame {
 	public void step() {
 		// Keep track of how long the game has run.
 		this.stepsTaken += 1;
-				
+		this.wanderSteps++;
 		// These are all the objects in the world in the same cell as the player.
 		List<WorldObject> overlap = this.player.findSameCell();
 		// The player is there, too, let's skip them.
@@ -121,8 +144,59 @@ public class FishGame {
 				found.add((Fish)wo);
 				
 				// Increase score when you find a fish!
-				score += 10;
+				score += found.get(found.size()-1).points;
 			}
+		}
+		// If a fish gets home, remove it from found.
+		for(int i=0; i<found.size(); i++)
+		{
+			Fish home_fish = found.get(i);
+			// These are all the objects in the world in the same cell as home_fish.
+			List<WorldObject> fish_overlap = home_fish.findSameCell();
+			// The home_fish is there, so it should be skipped.
+			fish_overlap.remove(home_fish);
+			
+			// If the fish overlaps with home, remove the fish from found
+			for (WorldObject wo : fish_overlap) 
+			{
+				if(wo.equals(home))
+				{
+					// Remove the fish from the found list
+					found.remove(home_fish);
+					// Remove the fish from the world
+					world.remove(home_fish);
+					// Add the fish to the fish_home list
+					fish_home.add(home_fish);
+				}
+			}
+		}
+		
+		// If all the follower fish went home, the player should be removed once it comes home.
+		if(missing.size()==0 && found.size()==0)
+		{
+			// If the player overlaps with home, remove it from the world and add it to fish_home.
+			for (WorldObject wo : overlap) {
+				if(wo.equals(home))
+				{
+					fish_home.add(this.player);
+					world.remove(this.player);
+				}
+			}
+		}
+		
+		// Every 20 steps, there is a chance some fish can wander
+		if(wanderSteps > 20)
+		{
+			// Fish further than two from the front have a chance of wandering
+			for(int i=2; i<found.size(); i++)
+			{
+				Fish fishie = found.get(i);
+				if(rand.nextInt(10)>6)
+					found.remove(fishie);
+					missing.add(fishie);
+			}
+			// wanderStep resets so it will take 20 more steps for fish to have the chance of wandering.
+			wanderSteps = 0;
 		}
 		
 		// Make sure missing fish *do* something.
@@ -165,10 +239,19 @@ public class FishGame {
 	 * @param y - the y-tile.
 	 */
 	public void click(int x, int y) {
-		// TODO(P2) use this print to debug your World.canSwim changes!
 		System.out.println("Clicked on: "+x+","+y+ " world.canSwim(player,...)="+world.canSwim(player, x, y));
 		List<WorldObject> atPoint = world.find(x, y);
-		// TODO(P2) allow the user to click and remove rocks.
+		for(int i=0; i<atPoint.size(); i++)
+		{
+			List<WorldObject> sameCell = atPoint.get(i).findSameCell();
+			for(int j=0; j<sameCell.size(); j++)
+			{
+				if(atPoint.get(i).inSameSpot(sameCell.get(j)))
+				{
+					sameCell.get(j).remove();
+				}
+			}
+		}
 
 	}
 	
